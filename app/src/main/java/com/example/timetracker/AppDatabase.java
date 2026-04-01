@@ -28,6 +28,7 @@ public abstract class AppDatabase extends RoomDatabase {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                                     AppDatabase.class, "time_tracker_database")
                             .addCallback(sRoomDatabaseCallback)
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }
@@ -43,14 +44,28 @@ public abstract class AppDatabase extends RoomDatabase {
             databaseWriteExecutor.execute(() -> {
                 AppDao dao = INSTANCE.appDao();
 
-                // Add sample data
-                long employerId = dao.insertEmployer(new Employer("Acme Corp"));
-                long jobId = dao.insertJob(new Job("Software Engineer", (int) employerId));
-                dao.insertTime(new TimeRecord((int) jobId, System.currentTimeMillis() - 3600000, System.currentTimeMillis()));
+                // Existing sample data
+                long acmeId = dao.insertEmployer(new Employer("Acme Corp"));
+                long engJobId = dao.insertJob(new Job("Software Engineer", (int) acmeId));
+                dao.insertTime(new TimeRecord((int) engJobId, System.currentTimeMillis() - 3600000, System.currentTimeMillis()));
 
-                employerId = dao.insertEmployer(new Employer("Globex Corporation"));
-                jobId = dao.insertJob(new Job("Project Manager", (int) employerId));
-                dao.insertTime(new TimeRecord((int) jobId, System.currentTimeMillis() - 7200000, System.currentTimeMillis() - 3600000));
+                long globexId = dao.insertEmployer(new Employer("Globex Corporation"));
+                long pmJobId = dao.insertJob(new Job("Project Manager", (int) globexId));
+                dao.insertTime(new TimeRecord((int) pmJobId, System.currentTimeMillis() - 7200000, System.currentTimeMillis() - 3600000));
+
+                // New sample data: 1 Employer, 1 Job, 2 Time entries
+                long wayneId = dao.insertEmployer(new Employer("Wayne Enterprises"));
+                long securityJobId = dao.insertJob(new Job("Security Consultant", (int) wayneId));
+                
+                // Time entry 1: 3 hours ago to 2 hours ago
+                dao.insertTime(new TimeRecord((int) securityJobId, 
+                        System.currentTimeMillis() - 10800000, 
+                        System.currentTimeMillis() - 7200000));
+                
+                // Time entry 2: 1 hour ago to now
+                dao.insertTime(new TimeRecord((int) securityJobId, 
+                        System.currentTimeMillis() - 3600000, 
+                        System.currentTimeMillis()));
             });
         }
     };

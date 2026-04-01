@@ -3,6 +3,8 @@ package com.example.timetracker;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Transaction;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -17,12 +19,20 @@ public interface AppDao {
     @Insert
     long insertTime(TimeRecord timeRecord);
 
-    @Query("SELECT * FROM employer_table")
-    List<Employer> getAllEmployers();
+    @Update
+    void updateJob(Job job);
 
+    @Transaction
     @Query("SELECT * FROM job_table")
-    List<Job> getAllJobs();
+    List<JobWithEmployer> getAllJobsWithEmployer();
 
-    @Query("SELECT * FROM time_table")
-    List<TimeRecord> getAllTimeRecords();
+    @Query("SELECT * FROM time_table WHERE jobId = :jobId")
+    List<TimeRecord> getTimeRecordsForJob(int jobId);
+
+    @Transaction
+    @Query("SELECT * FROM job_table WHERE id = :jobId")
+    JobWithEmployer getJobWithEmployerById(int jobId);
+
+    @Query("SELECT * FROM job_table WHERE id = :jobId")
+    Job getJobById(int jobId);
 }

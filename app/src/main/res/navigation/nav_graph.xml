@@ -8,21 +8,34 @@
     <fragment
         android:id="@+id/FirstFragment"
         android:name="com.example.timetracker.FirstFragment"
-        android:label="@string/first_fragment_label"
+        android:label="Jobs"
         tools:layout="@layout/fragment_first">
 
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_FirstFragment_to_JobDetailFragment"
+            app:destination="@id/JobDetailFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.example.timetracker.SecondFragment"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
 
+    <fragment
+        android:id="@+id/JobDetailFragment"
+        android:name="com.example.timetracker.JobDetailFragment"
+        android:label="Job Details"
+        tools:layout="@layout/fragment_job_detail">
+        <argument
+            android:name="jobId"
+            app:argType="integer" />
         <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            android:id="@+id/action_JobDetailFragment_to_SendFragment"
+            app:destination="@id/SendFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/SendFragment"
+        android:name="com.example.timetracker.SendFragment"
+        android:label="Send Report"
+        tools:layout="@layout/fragment_send">
+        <argument
+            android:name="jobId"
+            app:argType="integer" />
     </fragment>
 </navigation>
