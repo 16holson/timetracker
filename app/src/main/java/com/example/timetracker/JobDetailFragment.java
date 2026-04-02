@@ -22,6 +22,7 @@ public class JobDetailFragment extends Fragment {
     private FragmentJobDetailBinding binding;
     private int jobId;
     private Job currentJob;
+    private Employer currentEmployer;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,14 +47,20 @@ public class JobDetailFragment extends Fragment {
 
         AppDatabase.databaseWriteExecutor.execute(() -> {
             currentJob = AppDatabase.getDatabase(getContext()).appDao().getJobById(jobId);
+            if (currentJob != null) {
+                currentEmployer = AppDatabase.getDatabase(getContext()).appDao().getEmployerById(currentJob.getEmployerId());
+            }
             List<TimeRecord> records = AppDatabase.getDatabase(getContext()).appDao().getTimeRecordsForJob(jobId);
             
             getActivity().runOnUiThread(() -> {
                 if (currentJob != null) {
                     binding.editJobTitle.setText(currentJob.getTitle());
                 }
+                if (currentEmployer != null) {
+                    binding.editEmployerName.setText(currentEmployer.getName());
+                }
                 binding.recyclerviewTimes.setAdapter(new TimeAdapter(records));
-                setupTitleEditor();
+                setupEditors();
             });
         });
 
@@ -65,7 +72,7 @@ public class JobDetailFragment extends Fragment {
         });
     }
 
-    private void setupTitleEditor() {
+    private void setupEditors() {
         binding.editJobTitle.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -76,10 +83,27 @@ public class JobDetailFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 if (currentJob != null) {
-                    String newTitle = s.toString();
-                    currentJob.setTitle(newTitle);
+                    currentJob.setTitle(s.toString());
                     AppDatabase.databaseWriteExecutor.execute(() -> {
                         AppDatabase.getDatabase(getContext()).appDao().updateJob(currentJob);
+                    });
+                }
+            }
+        });
+
+        binding.editEmployerName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (currentEmployer != null) {
+                    currentEmployer.setName(s.toString());
+                    AppDatabase.databaseWriteExecutor.execute(() -> {
+                        AppDatabase.getDatabase(getContext()).appDao().updateEmployer(currentEmployer);
                     });
                 }
             }

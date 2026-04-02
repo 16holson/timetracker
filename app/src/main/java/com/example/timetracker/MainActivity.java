@@ -1,9 +1,11 @@
 package com.example.timetracker;
 
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -16,11 +18,17 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.timetracker.databinding.ActivityMainBinding;
 import com.example.timetracker.databinding.DialogAddJobBinding;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
     private NavController navController;
+
+    private long startTime, endTime, lunchStart, lunchEnd, travelStart, travelEnd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,40 +93,55 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showAddTimeDialog(int jobId) {
-        android.view.View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_time, null);
-        EditText startInput = dialogView.findViewById(R.id.edit_start_minutes_ago);
-        EditText durationInput = dialogView.findViewById(R.id.edit_duration_minutes);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_time, null);
+        
+        // Reset times for new dialog
+        startTime = endTime = lunchStart = lunchEnd = travelStart = travelEnd = 0;
+
+        setupTimeButton(dialogView.findViewById(R.id.btn_start_time), "Start", t -> startTime = t);
+        setupTimeButton(dialogView.findViewById(R.id.btn_end_time), "End", t -> endTime = t);
+        setupTimeButton(dialogView.findViewById(R.id.btn_lunch_start), "Lunch Start", t -> lunchStart = t);
+        setupTimeButton(dialogView.findViewById(R.id.btn_lunch_end), "Lunch End", t -> lunchEnd = t);
+        setupTimeButton(dialogView.findViewById(R.id.btn_travel_start), "Travel Start", t -> travelStart = t);
+        setupTimeButton(dialogView.findViewById(R.id.btn_travel_end), "Travel End", t -> travelEnd = t);
 
         new AlertDialog.Builder(this)
                 .setTitle("Add Time Entry")
                 .setView(dialogView)
                 .setPositiveButton("Add", (dialog, which) -> {
-                    try {
-                        int startMins = Integer.parseInt(startInput.getText().toString());
-                        int durationMins = Integer.parseInt(durationInput.getText().toString());
+                    AppDatabase.databaseWriteExecutor.execute(() -> {
+                        AppDatabase.getDatabase(getApplicationContext()).appDao()
+                                .insertTime(new TimeRecord(jobId, startTime, endTime, lunchStart, lunchEnd, travelStart, travelEnd));
                         
-                        long endTime = System.currentTimeMillis();
-                        long startTime = endTime - (startMins * 60000L);
-                        long actualEndTime = startTime + (durationMins * 60000L);
-
-                        AppDatabase.databaseWriteExecutor.execute(() -> {
-                            AppDatabase.getDatabase(getApplicationContext()).appDao()
-                                    .insertTime(new TimeRecord(jobId, startTime, actualEndTime));
-                            
-                            runOnUiThread(() -> {
-                                Toast.makeText(this, "Time entry added", Toast.LENGTH_SHORT).show();
-                                // Refresh current fragment
-                                Bundle bundle = new Bundle();
-                                bundle.putInt("jobId", jobId);
-                                navController.navigate(R.id.JobDetailFragment, bundle);
-                            });
+                        runOnUiThread(() -> {
+                            Toast.makeText(this, "Time entry added", Toast.LENGTH_SHORT).show();
+                            Bundle bundle = new Bundle();
+                            bundle.putInt("jobId", jobId);
+                            navController.navigate(R.id.JobDetailFragment, bundle);
                         });
-                    } catch (NumberFormatException e) {
-                        Toast.makeText(this, "Invalid input", Toast.LENGTH_SHORT).show();
-                    }
+                    });
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
+    }
+
+    private void setupTimeButton(Button button, String label, TimeSelectedListener listener) {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.getDefault());
+        button.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            new TimePickerDialog(this, (view, hourOfDay, minute) -> {
+                Calendar selected = Calendar.getInstance();
+                selected.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                selected.set(Calendar.MINUTE, minute);
+                long timeMillis = selected.getTimeInMillis();
+                listener.onTimeSelected(timeMillis);
+                button.setText(label + ": " + timeFormat.format(selected.getTime()));
+            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show();
+        });
+    }
+
+    interface TimeSelectedListener {
+        void onTimeSelected(long timeMillis);
     }
 
     @Override

@@ -15,11 +15,19 @@ public class TimeRecord {
     private int jobId;
     private long startTime;
     private long endTime;
+    private long lunchStartTime;
+    private long lunchEndTime;
+    private long travelStartTime;
+    private long travelEndTime;
 
-    public TimeRecord(int jobId, long startTime, long endTime) {
+    public TimeRecord(int jobId, long startTime, long endTime, long lunchStartTime, long lunchEndTime, long travelStartTime, long travelEndTime) {
         this.jobId = jobId;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.lunchStartTime = lunchStartTime;
+        this.lunchEndTime = lunchEndTime;
+        this.travelStartTime = travelStartTime;
+        this.travelEndTime = travelEndTime;
     }
 
     public int getId() {
@@ -52,5 +60,37 @@ public class TimeRecord {
 
     public void setEndTime(long endTime) {
         this.endTime = endTime;
+    }
+
+    public long getLunchStartTime() {
+        return lunchStartTime;
+    }
+
+    public void setLunchStartTime(long lunchStartTime) {
+        this.lunchStartTime = lunchStartTime;
+    }
+
+    public long getLunchEndTime() {
+        return lunchEndTime;
+    }
+
+    public void setLunchEndTime(long lunchEndTime) {
+        this.lunchEndTime = lunchEndTime;
+    }
+
+    public long getTravelStartTime() {
+        return travelStartTime;
+    }
+
+    public void setTravelStartTime(long travelStartTime) {
+        this.travelStartTime = travelStartTime;
+    }
+
+    public long getTravelEndTime() {
+        return travelEndTime;
+    }
+
+    public void setTravelEndTime(long travelEndTime) {
+        this.travelEndTime = travelEndTime;
     }
 }

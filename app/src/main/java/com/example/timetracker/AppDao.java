@@ -22,6 +22,9 @@ public interface AppDao {
     @Update
     void updateJob(Job job);
 
+    @Update
+    void updateEmployer(Employer employer);
+
     @Transaction
     @Query("SELECT * FROM job_table")
     List<JobWithEmployer> getAllJobsWithEmployer();
@@ -35,4 +38,7 @@ public interface AppDao {
 
     @Query("SELECT * FROM job_table WHERE id = :jobId")
     Job getJobById(int jobId);
+
+    @Query("SELECT * FROM employer_table WHERE id = :employerId")
+    Employer getEmployerById(int employerId);
 }

@@ -13,6 +13,14 @@
         android:padding="16dp">
 
         <TextView
+            android:id="@+id/date_display"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
             android:id="@+id/start_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,11 +33,26 @@
             android:textSize="14sp" />
 
         <TextView
+            android:id="@+id/lunch_display"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/travel_display"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/duration"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:layout_marginTop="4dp" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

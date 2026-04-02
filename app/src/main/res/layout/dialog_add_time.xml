@@ -1,33 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:columnCount="2"
+    android:padding="16dp"
+    android:rowCount="3">
 
-    <TextView
-        android:layout_width="match_parent"
+    <!-- Row 0 -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_start_time"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Start Time (minutes ago)" />
+        android:layout_columnWeight="1"
+        android:layout_margin="4dp"
+        android:text="Start Time" />
 
-    <EditText
-        android:id="@+id/edit_start_minutes_ago"
-        android:layout_width="match_parent"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_end_time"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:inputType="number"
-        android:text="60" />
+        android:layout_columnWeight="1"
+        android:layout_margin="4dp"
+        android:text="End Time" />
 
-    <TextView
-        android:layout_width="match_parent"
+    <!-- Row 1 -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_lunch_start"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Duration (minutes)" />
+        android:layout_columnWeight="1"
+        android:layout_margin="4dp"
+        android:text="Lunch Start" />
 
-    <EditText
-        android:id="@+id/edit_duration_minutes"
-        android:layout_width="match_parent"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_lunch_end"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:inputType="number"
-        android:text="60" />
+        android:layout_columnWeight="1"
+        android:layout_margin="4dp"
+        android:text="Lunch End" />
 
-</LinearLayout>
+    <!-- Row 2 -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_travel_start"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_margin="4dp"
+        android:text="Travel Start" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_travel_end"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_columnWeight="1"
+        android:layout_margin="4dp"
+        android:text="Travel End" />
+
+</GridLayout>

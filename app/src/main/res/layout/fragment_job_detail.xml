@@ -20,14 +20,31 @@
             android:inputType="textCapWords" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layout_employer_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        android:hint="Employer Name"
+        app:layout_constraintTop_toBottomOf="@id/layout_job_title">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_employer_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapWords" />
+    </com.google.android.material.textfield.TextInputLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_times"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toTopOf="@+id/button_send"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layout_job_title"
+        app:layout_constraintTop_toBottomOf="@id/layout_employer_name"
         tools:listitem="@layout/item_time" />
 
     <Button
