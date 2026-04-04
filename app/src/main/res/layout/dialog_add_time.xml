@@ -1,76 +1,219 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:columnCount="2"
-    android:padding="16dp">
+    android:layout_height="wrap_content">
 
-    <!-- Row 0: Date Selection -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_date"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_columnSpan="2"
-        android:layout_columnWeight="1"
-        android:layout_margin="4dp"
-        android:text="Select Date" />
+        android:orientation="vertical"
+        android:padding="12dp">
 
-    <!-- Row 1 -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_start_time"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_columnWeight="1"
-        android:layout_margin="4dp"
-        android:text="Start Time" />
+        <!-- Date Selection -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="Date"
+            app:startIconDrawable="@android:drawable/ic_menu_today">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_end_time"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_columnWeight="1"
-        android:layout_margin="4dp"
-        android:text="End Time" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/btn_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:clickable="true"
+                android:inputType="none"
+                android:singleLine="true"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Row 2 -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_lunch_start"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_columnWeight="1"
-        android:layout_margin="4dp"
-        android:text="Lunch Start" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Work Hours"
+            android:textAppearance="?attr/textAppearanceSubtitle2"
+            android:textColor="@color/primary"
+            android:layout_marginBottom="8dp" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_lunch_end"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_columnWeight="1"
-        android:layout_margin="4dp"
-        android:text="Lunch End" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp"
+            android:baselineAligned="false">
 
-    <!-- Row 3 -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_travel_start"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_columnWeight="1"
-        android:layout_margin="4dp"
-        android:text="Travel Start" />
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:hint="Start"
+                app:startIconDrawable="@android:drawable/ic_menu_recent_history">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_travel_end"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_columnWeight="1"
-        android:layout_margin="4dp"
-        android:text="Travel End" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/btn_start_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:inputType="none"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:textSize="16sp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="4dp" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-</GridLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:hint="End"
+                app:startIconDrawable="@android:drawable/ic_menu_recent_history">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/btn_end_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:inputType="none"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:textSize="16sp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="4dp" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lunch Break"
+            android:textAppearance="?attr/textAppearanceSubtitle2"
+            android:textColor="@color/primary"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp"
+            android:baselineAligned="false">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:hint="Start"
+                app:startIconDrawable="@android:drawable/ic_menu_view">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/btn_lunch_start"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:inputType="none"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:textSize="16sp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="4dp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:hint="End"
+                app:startIconDrawable="@android:drawable/ic_menu_view">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/btn_lunch_end"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:inputType="none"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:textSize="16sp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="4dp" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Travel"
+            android:textAppearance="?attr/textAppearanceSubtitle2"
+            android:textColor="@color/primary"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:hint="Start"
+                app:startIconDrawable="@android:drawable/ic_menu_directions">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/btn_travel_start"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:inputType="none"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:textSize="16sp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="4dp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:hint="End"
+                app:startIconDrawable="@android:drawable/ic_menu_directions">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/btn_travel_end"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:inputType="none"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:textSize="16sp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="4dp" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

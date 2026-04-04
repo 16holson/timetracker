@@ -27,7 +27,6 @@ public abstract class AppDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                                     AppDatabase.class, "time_tracker_database")
-                            .addCallback(sRoomDatabaseCallback)
                             .fallbackToDestructiveMigration()
                             .build();
                 }
@@ -35,38 +34,4 @@ public abstract class AppDatabase extends RoomDatabase {
         }
         return INSTANCE;
     }
-
-    private static final RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback() {
-        @Override
-        public void onCreate(@NonNull SupportSQLiteDatabase db) {
-            super.onCreate(db);
-
-            databaseWriteExecutor.execute(() -> {
-                AppDao dao = INSTANCE.appDao();
-
-                // Existing sample data
-                long acmeId = dao.insertEmployer(new Employer("Acme Corp", "hr@acme.com"));
-                long engJobId = dao.insertJob(new Job("New York Office", (int) acmeId));
-                dao.insertTime(new TimeRecord((int) engJobId, System.currentTimeMillis() - 3600000, System.currentTimeMillis(), 0, 0, 0, 0));
-
-                long globexId = dao.insertEmployer(new Employer("Globex Corporation", "scorpio@globex.com"));
-                long pmJobId = dao.insertJob(new Job("Remote Location", (int) globexId));
-                dao.insertTime(new TimeRecord((int) pmJobId, System.currentTimeMillis() - 7200000, System.currentTimeMillis() - 3600000, 0, 0, 0, 0));
-
-                // New sample data: 1 Employer, 1 Job, 2 Time entries
-                long wayneId = dao.insertEmployer(new Employer("Wayne Enterprises", "bruce@wayneent.com"));
-                long securityJobId = dao.insertJob(new Job("Gotham City", (int) wayneId));
-                
-                // Time entry 1: 3 hours ago to 2 hours ago
-                dao.insertTime(new TimeRecord((int) securityJobId, 
-                        System.currentTimeMillis() - 10800000, 
-                        System.currentTimeMillis() - 7200000, 0, 0, 0, 0));
-                
-                // Time entry 2: 1 hour ago to now
-                dao.insertTime(new TimeRecord((int) securityJobId, 
-                        System.currentTimeMillis() - 3600000, 
-                        System.currentTimeMillis(), 0, 0, 0, 0));
-            });
-        }
-    };
 }

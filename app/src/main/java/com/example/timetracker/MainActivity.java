@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -19,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -31,6 +31,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.timetracker.databinding.ActivityMainBinding;
 import com.example.timetracker.databinding.DialogAddJobBinding;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -125,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             });
         });
 
-        AlertDialog dialog = new AlertDialog.Builder(this)
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                 .setTitle("Add New Job")
                 .setView(dialogBinding.getRoot())
                 .setPositiveButton("Create", null)
@@ -181,15 +182,15 @@ public class MainActivity extends AppCompatActivity {
         startTime = endTime = lunchStart = lunchEnd = travelStart = travelEnd = 0;
         baseCalendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-        Button btnDate = dialogView.findViewById(R.id.btn_date);
-        btnDate.setText("Date: " + dateFormat.format(baseCalendar.getTime()));
+        TextView btnDate = dialogView.findViewById(R.id.btn_date);
+        btnDate.setText(dateFormat.format(baseCalendar.getTime()));
 
         btnDate.setOnClickListener(v -> {
             new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
                 baseCalendar.set(Calendar.YEAR, year);
                 baseCalendar.set(Calendar.MONTH, month);
                 baseCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                btnDate.setText("Date: " + dateFormat.format(baseCalendar.getTime()));
+                btnDate.setText(dateFormat.format(baseCalendar.getTime()));
                 
                 // Update all set times to the new date
                 if (startTime != 0) startTime = updateDateOfTime(startTime, baseCalendar);
@@ -201,14 +202,14 @@ public class MainActivity extends AppCompatActivity {
             }, baseCalendar.get(Calendar.YEAR), baseCalendar.get(Calendar.MONTH), baseCalendar.get(Calendar.DAY_OF_MONTH)).show();
         });
 
-        setupTimeButton(dialogView.findViewById(R.id.btn_start_time), "Start", 0, t -> startTime = t);
-        setupTimeButton(dialogView.findViewById(R.id.btn_end_time), "End", 0, t -> endTime = t);
-        setupTimeButton(dialogView.findViewById(R.id.btn_lunch_start), "Lunch Start", 0, t -> lunchStart = t);
-        setupTimeButton(dialogView.findViewById(R.id.btn_lunch_end), "Lunch End", 0, t -> lunchEnd = t);
-        setupTimeButton(dialogView.findViewById(R.id.btn_travel_start), "Travel Start", 0, t -> travelStart = t);
-        setupTimeButton(dialogView.findViewById(R.id.btn_travel_end), "Travel End", 0, t -> travelEnd = t);
+        setupTimeButton(dialogView.findViewById(R.id.btn_start_time), 0, t -> startTime = t);
+        setupTimeButton(dialogView.findViewById(R.id.btn_end_time), 0, t -> endTime = t);
+        setupTimeButton(dialogView.findViewById(R.id.btn_lunch_start), 0, t -> lunchStart = t);
+        setupTimeButton(dialogView.findViewById(R.id.btn_lunch_end), 0, t -> lunchEnd = t);
+        setupTimeButton(dialogView.findViewById(R.id.btn_travel_start), 0, t -> travelStart = t);
+        setupTimeButton(dialogView.findViewById(R.id.btn_travel_end), 0, t -> travelEnd = t);
 
-        AlertDialog dialog = new AlertDialog.Builder(this)
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
                 .setTitle("Add Time Entry")
                 .setView(dialogView)
                 .setPositiveButton("Add", null)
@@ -225,6 +226,9 @@ public class MainActivity extends AppCompatActivity {
                     
                     runOnUiThread(() -> {
                         Toast.makeText(this, "Time entry added", Toast.LENGTH_SHORT).show();
+                        // Instead of navigating (which might cause issues if already there), 
+                        // find the fragment and refresh if possible, or let the user see the result.
+                        // For now, simple navigation back to detail to refresh.
                         Bundle bundle = new Bundle();
                         bundle.putInt("jobId", jobId);
                         navController.navigate(R.id.JobDetailFragment, bundle);
@@ -244,11 +248,11 @@ public class MainActivity extends AppCompatActivity {
         return c.getTimeInMillis();
     }
 
-    private void setupTimeButton(Button button, String label, long initialTime, TimeSelectedListener listener) {
+    private void setupTimeButton(TextView textView, long initialTime, TimeSelectedListener listener) {
         final long[] currentTime = {initialTime};
         SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.getDefault());
         
-        button.setOnClickListener(v -> {
+        textView.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(baseCalendar.getTimeInMillis()); // Start with base date
             if (currentTime[0] != 0) calendar.setTimeInMillis(currentTime[0]);
@@ -260,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
                 calendar.set(Calendar.MILLISECOND, 0);
                 currentTime[0] = calendar.getTimeInMillis();
                 listener.onTimeSelected(currentTime[0]);
-                button.setText(label + ": " + timeFormat.format(calendar.getTime()));
+                textView.setText(timeFormat.format(calendar.getTime()));
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show();
         });
     }
@@ -274,10 +278,15 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 ListView listView = new ListView(this);
+                listView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
+                listView.setDivider(null);
+                listView.setPadding(0, 16, 0, 16);
+                listView.setClipToPadding(false);
+
                 EmployerManagementAdapter adapter = new EmployerManagementAdapter(this, employers);
                 listView.setAdapter(adapter);
 
-                manageEmployersDialog = new AlertDialog.Builder(this)
+                manageEmployersDialog = new MaterialAlertDialogBuilder(this)
                         .setTitle("Manage Employers")
                         .setView(listView)
                         .setPositiveButton("Close", null)
@@ -313,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showDeleteEmployerConfirmation(Employer employer) {
-        new AlertDialog.Builder(this)
+        new MaterialAlertDialogBuilder(this)
                 .setTitle("Delete Employer")
                 .setMessage("Are you sure you want to delete " + employer.getName() + "? This will also delete ALL jobs and time records associated with this employer.")
                 .setPositiveButton("Delete", (dialog, which) -> {

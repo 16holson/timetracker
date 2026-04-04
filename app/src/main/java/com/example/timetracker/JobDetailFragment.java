@@ -8,21 +8,19 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.timetracker.databinding.FragmentJobDetailBinding;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -59,12 +57,6 @@ public class JobDetailFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, windowInsets) -> {
-            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
-            return WindowInsetsCompat.CONSUMED;
-        });
 
         binding.recyclerviewTimes.setLayoutManager(new LinearLayoutManager(getContext()));
         
@@ -125,15 +117,15 @@ public class JobDetailFragment extends Fragment {
         }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-        Button btnDate = dialogView.findViewById(R.id.btn_date);
-        btnDate.setText("Date: " + dateFormat.format(baseCalendar.getTime()));
+        TextView btnDate = dialogView.findViewById(R.id.btn_date);
+        btnDate.setText(dateFormat.format(baseCalendar.getTime()));
 
         btnDate.setOnClickListener(v -> {
             new DatePickerDialog(requireContext(), (view, year, month, dayOfMonth) -> {
                 baseCalendar.set(Calendar.YEAR, year);
                 baseCalendar.set(Calendar.MONTH, month);
                 baseCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                btnDate.setText("Date: " + dateFormat.format(baseCalendar.getTime()));
+                btnDate.setText(dateFormat.format(baseCalendar.getTime()));
                 
                 if (tempStartTime != 0) tempStartTime = updateDateOfTime(tempStartTime, baseCalendar);
                 if (tempEndTime != 0) tempEndTime = updateDateOfTime(tempEndTime, baseCalendar);
@@ -144,14 +136,14 @@ public class JobDetailFragment extends Fragment {
             }, baseCalendar.get(Calendar.YEAR), baseCalendar.get(Calendar.MONTH), baseCalendar.get(Calendar.DAY_OF_MONTH)).show();
         });
 
-        setupTimeButton(dialogView.findViewById(R.id.btn_start_time), "Start", tempStartTime, t -> tempStartTime = t);
-        setupTimeButton(dialogView.findViewById(R.id.btn_end_time), "End", tempEndTime, t -> tempEndTime = t);
-        setupTimeButton(dialogView.findViewById(R.id.btn_lunch_start), "Lunch Start", tempLunchStart, t -> tempLunchStart = t);
-        setupTimeButton(dialogView.findViewById(R.id.btn_lunch_end), "Lunch End", tempLunchEnd, t -> tempLunchEnd = t);
-        setupTimeButton(dialogView.findViewById(R.id.btn_travel_start), "Travel Start", tempTravelStart, t -> tempTravelStart = t);
-        setupTimeButton(dialogView.findViewById(R.id.btn_travel_end), "Travel End", tempTravelEnd, t -> tempTravelEnd = t);
+        setupTimeButton(dialogView.findViewById(R.id.btn_start_time), tempStartTime, t -> tempStartTime = t);
+        setupTimeButton(dialogView.findViewById(R.id.btn_end_time), tempEndTime, t -> tempEndTime = t);
+        setupTimeButton(dialogView.findViewById(R.id.btn_lunch_start), tempLunchStart, t -> tempLunchStart = t);
+        setupTimeButton(dialogView.findViewById(R.id.btn_lunch_end), tempLunchEnd, t -> tempLunchEnd = t);
+        setupTimeButton(dialogView.findViewById(R.id.btn_travel_start), tempTravelStart, t -> tempTravelStart = t);
+        setupTimeButton(dialogView.findViewById(R.id.btn_travel_end), tempTravelEnd, t -> tempTravelEnd = t);
 
-        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Edit Time Entry")
                 .setView(dialogView)
                 .setPositiveButton("Save", null)
@@ -193,7 +185,7 @@ public class JobDetailFragment extends Fragment {
     }
 
     private void showDeleteTimeConfirmation(TimeRecord record, int position) {
-        new AlertDialog.Builder(requireContext())
+        new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Delete Time Entry")
                 .setMessage("Are you sure you want to delete this time entry?")
                 .setPositiveButton("Delete", (dialog, which) -> {
@@ -216,18 +208,23 @@ public class JobDetailFragment extends Fragment {
                 .show();
     }
 
-    private void setupTimeButton(Button button, String label, long initialTime, MainActivity.TimeSelectedListener listener) {
+    private void setupTimeButton(TextView textView, long initialTime, MainActivity.TimeSelectedListener listener) {
         SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.getDefault());
         if (initialTime != 0) {
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(initialTime);
-            button.setText(label + ": " + timeFormat.format(c.getTime()));
+            textView.setText(timeFormat.format(c.getTime()));
         }
 
-        button.setOnClickListener(v -> {
+        textView.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(baseCalendar.getTimeInMillis());
-            if (initialTime != 0) calendar.setTimeInMillis(initialTime);
+            if (initialTime != 0) {
+                Calendar existingTime = Calendar.getInstance();
+                existingTime.setTimeInMillis(initialTime);
+                calendar.set(Calendar.HOUR_OF_DAY, existingTime.get(Calendar.HOUR_OF_DAY));
+                calendar.set(Calendar.MINUTE, existingTime.get(Calendar.MINUTE));
+            }
             
             new TimePickerDialog(getContext(), (view, hourOfDay, minute) -> {
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
@@ -236,7 +233,7 @@ public class JobDetailFragment extends Fragment {
                 calendar.set(Calendar.MILLISECOND, 0);
                 long timeMillis = calendar.getTimeInMillis();
                 listener.onTimeSelected(timeMillis);
-                button.setText(label + ": " + timeFormat.format(calendar.getTime()));
+                textView.setText(timeFormat.format(calendar.getTime()));
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show();
         });
     }

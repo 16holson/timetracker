@@ -32,7 +32,7 @@
     <fragment
         android:id="@+id/SendFragment"
         android:name="com.example.timetracker.SendFragment"
-        android:label="Send Report"
+        android:label="Review Report"
         tools:layout="@layout/fragment_send">
         <argument
             android:name="jobId"
