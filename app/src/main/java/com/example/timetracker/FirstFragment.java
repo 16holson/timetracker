@@ -13,7 +13,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.timetracker.databinding.FragmentFirstBinding;
 
@@ -22,6 +24,8 @@ import java.util.List;
 public class FirstFragment extends Fragment {
 
     private FragmentFirstBinding binding;
+    private List<JobWithEmployer> jobList;
+    private JobAdapter adapter;
 
     @Override
     public View onCreateView(
@@ -43,15 +47,26 @@ public class FirstFragment extends Fragment {
         });
 
         binding.recyclerviewJobs.setLayoutManager(new LinearLayoutManager(getContext()));
+        
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(requireContext()) {
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                JobWithEmployer jobWithEmployer = jobList.get(position);
+                showDeleteConfirmation(jobWithEmployer.job, position);
+            }
+        });
+        itemTouchHelper.attachToRecyclerView(binding.recyclerviewJobs);
+
         refreshJobs();
     }
 
     public void refreshJobs() {
         AppDatabase.databaseWriteExecutor.execute(() -> {
-            List<JobWithEmployer> jobs = AppDatabase.getDatabase(getContext()).appDao().getAllJobsWithEmployer();
+            jobList = AppDatabase.getDatabase(getContext()).appDao().getAllJobsWithEmployer();
             if (getActivity() != null) {
                 getActivity().runOnUiThread(() -> {
-                    JobAdapter adapter = new JobAdapter(jobs, new JobAdapter.OnJobClickListener() {
+                    adapter = new JobAdapter(jobList, new JobAdapter.OnJobClickListener() {
                         @Override
                         public void onJobClick(JobWithEmployer job) {
                             Bundle bundle = new Bundle();
@@ -62,7 +77,9 @@ public class FirstFragment extends Fragment {
 
                         @Override
                         public void onDeleteClick(Job job) {
-                            showDeleteConfirmation(job);
+                            // Find position for current job to handle swipe if needed, 
+                            // but this is used for long click now.
+                            showDeleteConfirmation(job, -1);
                         }
                     });
                     binding.recyclerviewJobs.setAdapter(adapter);
@@ -71,7 +88,7 @@ public class FirstFragment extends Fragment {
         });
     }
 
-    private void showDeleteConfirmation(Job job) {
+    private void showDeleteConfirmation(Job job, int position) {
         new AlertDialog.Builder(requireContext())
                 .setTitle("Delete Job")
                 .setMessage("Are you sure you want to delete this job at " + job.getLocation() + "? This will also delete all associated time records.")
@@ -86,7 +103,16 @@ public class FirstFragment extends Fragment {
                         }
                     });
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    if (position != -1 && adapter != null) {
+                        adapter.notifyItemChanged(position);
+                    }
+                })
+                .setOnCancelListener(dialog -> {
+                    if (position != -1 && adapter != null) {
+                        adapter.notifyItemChanged(position);
+                    }
+                })
                 .show();
     }
 

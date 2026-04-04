@@ -3,7 +3,6 @@ package com.example.timetracker;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -40,11 +39,9 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
         holder.employerName.setText(jobWithEmployer.employer.getName());
         
         holder.itemView.setOnClickListener(v -> listener.onJobClick(jobWithEmployer));
-        
-        holder.btnDelete.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onDeleteClick(jobWithEmployer.job);
-            }
+        holder.itemView.setOnLongClickListener(v -> {
+            listener.onDeleteClick(jobWithEmployer.job);
+            return true;
         });
     }
 
@@ -56,13 +53,11 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
     static class JobViewHolder extends RecyclerView.ViewHolder {
         TextView jobLocation;
         TextView employerName;
-        ImageButton btnDelete;
 
         public JobViewHolder(@NonNull View itemView) {
             super(itemView);
             jobLocation = itemView.findViewById(R.id.job_location);
             employerName = itemView.findViewById(R.id.employer_name);
-            btnDelete = itemView.findViewById(R.id.btn_delete);
         }
     }
 }

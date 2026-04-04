@@ -3,7 +3,6 @@ package com.example.timetracker;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,7 +22,6 @@ public class TimeAdapter extends RecyclerView.Adapter<TimeAdapter.TimeViewHolder
 
     public interface OnTimeClickListener {
         void onTimeClick(TimeRecord record);
-        void onDeleteTimeClick(TimeRecord record);
     }
 
     public TimeAdapter(List<TimeRecord> records, OnTimeClickListener listener) {
@@ -103,12 +101,6 @@ public class TimeAdapter extends RecyclerView.Adapter<TimeAdapter.TimeViewHolder
                 listener.onTimeClick(record);
             }
         });
-
-        holder.btnDeleteTime.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onDeleteTimeClick(record);
-            }
-        });
     }
 
     @Override
@@ -122,7 +114,6 @@ public class TimeAdapter extends RecyclerView.Adapter<TimeAdapter.TimeViewHolder
         TextView lunchDisplay;
         TextView travelDisplay;
         TextView duration;
-        ImageButton btnDeleteTime;
 
         public TimeViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -131,7 +122,6 @@ public class TimeAdapter extends RecyclerView.Adapter<TimeAdapter.TimeViewHolder
             lunchDisplay = itemView.findViewById(R.id.lunch_display);
             travelDisplay = itemView.findViewById(R.id.travel_display);
             duration = itemView.findViewById(R.id.duration);
-            btnDeleteTime = itemView.findViewById(R.id.btn_delete_time);
         }
     }
 }

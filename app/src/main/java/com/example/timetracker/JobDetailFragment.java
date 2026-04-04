@@ -14,8 +14,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.timetracker.databinding.FragmentJobDetailBinding;
 
@@ -30,6 +35,8 @@ public class JobDetailFragment extends Fragment {
     private int jobId;
     private Job currentJob;
     private Employer currentEmployer;
+    private TimeAdapter adapter;
+    private List<TimeRecord> timeRecords;
 
     private long tempStartTime, tempEndTime, tempLunchStart, tempLunchEnd, tempTravelStart, tempTravelEnd;
     private Calendar baseCalendar = Calendar.getInstance();
@@ -53,7 +60,23 @@ public class JobDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
+            return WindowInsetsCompat.CONSUMED;
+        });
+
         binding.recyclerviewTimes.setLayoutManager(new LinearLayoutManager(getContext()));
+        
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(requireContext()) {
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                TimeRecord record = timeRecords.get(position);
+                showDeleteTimeConfirmation(record, position);
+            }
+        });
+        itemTouchHelper.attachToRecyclerView(binding.recyclerviewTimes);
 
         refreshData();
     }
@@ -64,7 +87,7 @@ public class JobDetailFragment extends Fragment {
             if (currentJob != null) {
                 currentEmployer = AppDatabase.getDatabase(getContext()).appDao().getEmployerById(currentJob.getEmployerId());
             }
-            List<TimeRecord> records = AppDatabase.getDatabase(getContext()).appDao().getTimeRecordsForJob(jobId);
+            timeRecords = AppDatabase.getDatabase(getContext()).appDao().getTimeRecordsForJob(jobId);
             
             if (getActivity() != null) {
                 getActivity().runOnUiThread(() -> {
@@ -75,17 +98,10 @@ public class JobDetailFragment extends Fragment {
                         binding.editEmployerName.setText(currentEmployer.getName());
                         binding.editEmployerEmail.setText(currentEmployer.getEmail());
                     }
-                    binding.recyclerviewTimes.setAdapter(new TimeAdapter(records, new TimeAdapter.OnTimeClickListener() {
-                        @Override
-                        public void onTimeClick(TimeRecord record) {
-                            showEditTimeDialog(record);
-                        }
-
-                        @Override
-                        public void onDeleteTimeClick(TimeRecord record) {
-                            showDeleteTimeConfirmation(record);
-                        }
-                    }));
+                    adapter = new TimeAdapter(timeRecords, record -> {
+                        showEditTimeDialog(record);
+                    });
+                    binding.recyclerviewTimes.setAdapter(adapter);
                     setupEditors();
                 });
             }
@@ -176,7 +192,7 @@ public class JobDetailFragment extends Fragment {
         return c.getTimeInMillis();
     }
 
-    private void showDeleteTimeConfirmation(TimeRecord record) {
+    private void showDeleteTimeConfirmation(TimeRecord record, int position) {
         new AlertDialog.Builder(requireContext())
                 .setTitle("Delete Time Entry")
                 .setMessage("Are you sure you want to delete this time entry?")
@@ -191,7 +207,12 @@ public class JobDetailFragment extends Fragment {
                         }
                     });
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    adapter.notifyItemChanged(position);
+                })
+                .setOnCancelListener(dialog -> {
+                    adapter.notifyItemChanged(position);
+                })
                 .show();
     }
 
