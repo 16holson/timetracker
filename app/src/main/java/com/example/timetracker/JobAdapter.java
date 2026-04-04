@@ -3,6 +3,7 @@ package com.example.timetracker;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
 
     public interface OnJobClickListener {
         void onJobClick(JobWithEmployer job);
+        void onDeleteClick(Job job);
     }
 
     public JobAdapter(List<JobWithEmployer> jobs, OnJobClickListener listener) {
@@ -33,10 +35,17 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull JobViewHolder holder, int position) {
-        JobWithEmployer job = jobs.get(position);
-        holder.jobTitle.setText(job.job.getTitle());
-        holder.employerName.setText(job.employer.getName());
-        holder.itemView.setOnClickListener(v -> listener.onJobClick(job));
+        JobWithEmployer jobWithEmployer = jobs.get(position);
+        holder.jobLocation.setText(jobWithEmployer.job.getLocation());
+        holder.employerName.setText(jobWithEmployer.employer.getName());
+        
+        holder.itemView.setOnClickListener(v -> listener.onJobClick(jobWithEmployer));
+        
+        holder.btnDelete.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onDeleteClick(jobWithEmployer.job);
+            }
+        });
     }
 
     @Override
@@ -45,13 +54,15 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
     }
 
     static class JobViewHolder extends RecyclerView.ViewHolder {
-        TextView jobTitle;
+        TextView jobLocation;
         TextView employerName;
+        ImageButton btnDelete;
 
         public JobViewHolder(@NonNull View itemView) {
             super(itemView);
-            jobTitle = itemView.findViewById(R.id.job_title);
+            jobLocation = itemView.findViewById(R.id.job_location);
             employerName = itemView.findViewById(R.id.employer_name);
+            btnDelete = itemView.findViewById(R.id.btn_delete);
         }
     }
 }

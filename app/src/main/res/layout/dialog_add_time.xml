@@ -3,10 +3,20 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:columnCount="2"
-    android:padding="16dp"
-    android:rowCount="3">
+    android:padding="16dp">
 
-    <!-- Row 0 -->
+    <!-- Row 0: Date Selection -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_date"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_columnSpan="2"
+        android:layout_columnWeight="1"
+        android:layout_margin="4dp"
+        android:text="Select Date" />
+
+    <!-- Row 1 -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_start_time"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
@@ -25,7 +35,7 @@
         android:layout_margin="4dp"
         android:text="End Time" />
 
-    <!-- Row 1 -->
+    <!-- Row 2 -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_lunch_start"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
@@ -44,7 +54,7 @@
         android:layout_margin="4dp"
         android:text="Lunch End" />
 
-    <!-- Row 2 -->
+    <!-- Row 3 -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_travel_start"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"

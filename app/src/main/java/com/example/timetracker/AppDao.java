@@ -1,6 +1,7 @@
 package com.example.timetracker;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
@@ -25,6 +26,18 @@ public interface AppDao {
     @Update
     void updateEmployer(Employer employer);
 
+    @Update
+    void updateTime(TimeRecord timeRecord);
+
+    @Delete
+    void deleteJob(Job job);
+
+    @Delete
+    void deleteTime(TimeRecord timeRecord);
+
+    @Delete
+    void deleteEmployer(Employer employer);
+
     @Transaction
     @Query("SELECT * FROM job_table")
     List<JobWithEmployer> getAllJobsWithEmployer();
@@ -41,4 +54,7 @@ public interface AppDao {
 
     @Query("SELECT * FROM employer_table WHERE id = :employerId")
     Employer getEmployerById(int employerId);
+
+    @Query("SELECT * FROM employer_table")
+    List<Employer> getAllEmployers();
 }

@@ -12,11 +12,11 @@ import androidx.room.PrimaryKey;
 public class Job {
     @PrimaryKey(autoGenerate = true)
     private int id;
-    private String title;
+    private String location;
     private int employerId;
 
-    public Job(String title, int employerId) {
-        this.title = title;
+    public Job(String location, int employerId) {
+        this.location = location;
         this.employerId = employerId;
     }
 
@@ -28,12 +28,12 @@ public class Job {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getLocation() {
+        return location;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public int getEmployerId() {
